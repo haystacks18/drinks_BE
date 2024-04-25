@@ -9,10 +9,6 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	sourceCompatibility = '17'
-
-	toolchain {
-		languageVersion.set(JavaLanguageVersion.of(17)) // Java 버전을 17로 설정
-	}
 }
 
 configurations {
