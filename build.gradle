@@ -9,6 +9,10 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	sourceCompatibility = '17'
+
+	toolchain {
+		languageVersion.set(JavaLanguageVersion.of(17)) // Java 버전을 17로 설정
+	}
 }
 
 configurations {
@@ -41,4 +45,9 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jar {
+	//프로젝트 빌드 시, -plain.jar가 생성되지 않도록 함
+	enabled = false;
 }
