@@ -1,4 +1,4 @@
-package com.goormfj.hanzan.domain;
+package com.goormfj.hanzan.chat.domain;
 
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class ChatDTO {
     // 메시지  타입 : 입장, 채팅
     public enum MessageType{
-        ENTER, TALK
+        ENTER, LEAVE, TALK
     }
 
     private MessageType type; // 메시지 타입

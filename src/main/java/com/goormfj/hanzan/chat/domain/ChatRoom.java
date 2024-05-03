@@ -1,14 +1,17 @@
-package com.goormfj.hanzan.domain;
+package com.goormfj.hanzan.chat.domain;
 
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -20,7 +23,9 @@ public class ChatRoom {
 
     private String name;
 
-    @ElementCollection
-    private List<String> userIds = new ArrayList<>();
+    private String thumbnailUrl;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> userIds = new HashSet<>();
 
 }

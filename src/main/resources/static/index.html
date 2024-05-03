@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 
 <head>
-    <title>WebSocket Chat</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat Test Page</title>
+
+    <style>
+        body { font-family: Arial, sans-serif; }
+        /*#chatArea { margin-bottom: 20px; }*/
+        #messageArea { margin-bottom: 20px; height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
+        /*#messageInput { width: calc(100% - 110px); }*/
+        /*#roomName { width: calc(100% - 110px); }*/
+        /*button { width: 100px; }*/
+    </style>
 
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
@@ -12,26 +21,39 @@
 
 <body>
 
-<h2>WebSocket Chat</h2>
+<h2>WebSocket Chat Test Page</h2>
+
+<div id="currentUserInfo">
+    <p>Current User ID: <span id="displayUserId">None</span></p>
+    <p>Current Room ID: <span id="displayRoomId">None</span></p>
+</div>
+
+<input type="text" id="myIdInput" placeholder="Enter your user ID"/>
+<button onclick="setUserId()">Set User ID</button>
+<button onclick="getRoomsByUserId(document.getElementById('myIdInput').value)">Lookup My Rooms</button>
+
+<br><br>
 <div id="messageArea"></div>
 
 <input type="text" id="messageInput" placeholder="Type a message..."/>
 <button onclick="sendMessage()">Send</button>
+<button onclick="searchChatMessages()">searchChat</button>
 
-<br>
+<br><br>
 <input type="text" id="roomNameInput" placeholder="Enter Room Name"/>
+<input type="text" id="thumbnailUrlInput" placeholder="Enter Thumbnail URL"/>
+<input type="text" id="initialMemberInput" placeholder="comma-separated Members"/>
+<button onclick="createRoom()">Create Room</button>
+<br>
 <button onclick="joinRoomByName(document.getElementById('roomNameInput').value)">Join Room</button>
 <button onclick="fetchChatHistory()">fetchChatHistory</button>
-<button onclick="searchChatMessages()">searchChatMessages</button>
 
-<br>
-<input type="text" id="roomName" placeholder="Room Name"/>
-<button onclick="createRoom()">Create Room</button>
-
-<br>
-<input type="text" id="userIdInput" placeholder="Enter your user ID"/>
-<button onclick="setUserId()">Set User ID</button>
-<button onclick="getRoomsByUserId(document.getElementById('userIdInput').value)">Lookup My Rooms</button>
+<br><br>
+<div id="userControls">
+    <input type="text" id="userIdInput" placeholder="User ID"/>
+    <button onclick="addUserToRoom()">Add User</button>
+    <button onclick="removeUserFromRoom()">Remove User</button>
+</div>
 
 <script>
     var stompClient = null;
@@ -60,14 +82,21 @@
     }
 
     function createRoom() {
-        var roomName = document.getElementById('roomName').value;
+        var roomName = document.getElementById('roomNameInput').value;
+        var thumbnailUrl = document.getElementById('thumbnailUrlInput').value;
+        var initialMembers = document.getElementById('initialMemberInput').value.split(',');
+
         if (roomName && currentUserId) {
             fetch(`/chat/createRoom`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: roomName, userId: currentUserId })
+                body: JSON.stringify({
+                    name: roomName,
+                    thumbnailUrl: thumbnailUrl,
+                    initialMembers: initialMembers
+                })
             })
                 .then(response => {
                     if (response.ok) {
@@ -127,6 +156,7 @@
         stompClient = Stomp.over(socket);
 
         currentRoomId = roomId;
+        document.getElementById('displayRoomId').textContent = currentRoomId; // 화면에 표시
 
         stompClient.connect({}, function(frame) {
             console.log('Connected: ' + frame);
@@ -139,9 +169,10 @@
     }
 
     function setUserId() {
-        var userId = document.getElementById('userIdInput').value;
+        var userId = document.getElementById('myIdInput').value;
         if (userId) {
             currentUserId = userId;
+            document.getElementById('displayUserId').textContent = currentUserId; // 화면에 표시
             console.log(`User ID set to: ${currentUserId}`);
         }
     }
@@ -180,7 +211,7 @@
 
     function searchChatMessages() {
         var roomId = currentRoomId; // 현재 채팅방 ID
-        var keyword = document.getElementById('searchInput').value; // 검색어 입력 필드
+        var keyword = document.getElementById('messageInput').value;
 
         if (roomId && keyword) {
             fetch(`/chat/searchChat/${roomId}?keyword=${encodeURIComponent(keyword)}`)
@@ -193,6 +224,48 @@
                     console.error('Error searching chat messages:', error);
                 });
         }
+    }
+
+    function addUserToRoom() {
+        var userIdInput = document.getElementById('userIdInput').value;
+        fetch(`/chat/addMembers`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ roomId: currentRoomId, userIds: [userIdInput] })
+        })
+            .then(response => {
+                if(response.ok) {
+                    console.log(`User ${userIdInput} added to room`);
+                } else {
+                    console.error('Error adding user to room');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding user:', error);
+            });
+    }
+
+    function removeUserFromRoom() {
+        var userIdInput = document.getElementById('userIdInput').value;
+        fetch(`/chat/removeMembers`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ roomId: currentRoomId, userIds: [userIdInput] })
+        })
+            .then(response => {
+                if(response.ok) {
+                    console.log(`User ${userIdInput} removed from room`);
+                } else {
+                    console.error('Error removing user from room');
+                }
+            })
+            .catch(error => {
+                console.error('Error removing user:', error);
+            });
     }
 
 </script>

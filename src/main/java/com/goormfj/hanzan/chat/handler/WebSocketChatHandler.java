@@ -1,7 +1,7 @@
-package com.goormfj.hanzan.handler;
+package com.goormfj.hanzan.chat.handler;
 
-import com.goormfj.hanzan.domain.ChatDTO;
-import com.goormfj.hanzan.service.ChatService;
+import com.goormfj.hanzan.chat.domain.ChatDTO;
+import com.goormfj.hanzan.chat.service.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

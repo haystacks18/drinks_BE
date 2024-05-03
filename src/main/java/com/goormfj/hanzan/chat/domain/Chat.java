@@ -1,4 +1,4 @@
-package com.goormfj.hanzan.domain;
+package com.goormfj.hanzan.chat.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.goormfj.hanzan.config;
+package com.goormfj.hanzan.chat.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
