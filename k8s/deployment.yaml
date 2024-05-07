@@ -1,6 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
+metadata:
+  name: backend
 spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
   template:
     metadata:
       labels:
@@ -8,7 +14,6 @@ spec:
     spec:
       containers:
         - name: backend
-          # 여러분의 image 주소를 입력해주세요.
           image: krmp-d2hub-idock.9rum.cc/dev-test/repo_d9d0a3ca0d88
           imagePullPolicy: Always
           ports:
