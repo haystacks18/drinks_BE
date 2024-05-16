@@ -13,6 +13,9 @@ EXPOSE 8080
 # The application's jar file
 ARG JAR_FILE=build/libs/*.jar
 
+# The application's version
+ENV VERSION=latest_1.2
+
 # Add the application's jar to the container
 ADD ${JAR_FILE} app.jar
 
